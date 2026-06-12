@@ -32,7 +32,11 @@ CREATE TABLE transactions (
 
 CREATE TABLE sms_recus (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  operator ENUM('mvola','orange','airtel') NOT NULL,
+  -- message_id: fanalahidy tokana isaky ny SMS fisika. Mialoha ny SMS very na
+  -- voakajy avo roa heny rehefa manao "retry" ny mpandefa (tsy nahazo 200 noho
+  -- ny réseau tapaka). Tsy maintsy UNIQUE.
+  message_id VARCHAR(190) UNIQUE NOT NULL,
+  operator ENUM('mvola','orange','airtel'),
   expediteur VARCHAR(20),
   corps TEXT NOT NULL,
   montant DECIMAL(15,2),
@@ -56,4 +60,6 @@ CREATE TABLE api_keys (
 
 CREATE INDEX idx_transactions_statut ON transactions(statut);
 CREATE INDEX idx_transactions_order_id ON transactions(order_id);
+-- Index ho an'ny fitadiavana order mifanaraka (orderMatcher)
+CREATE INDEX idx_transactions_match ON transactions(statut, operator, type, montant);
 CREATE INDEX idx_sms_trans_id ON sms_recus(trans_id);
